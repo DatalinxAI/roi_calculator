@@ -6,6 +6,7 @@
     <title>Datalinx AI | Revenue & Cost Impact Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -177,28 +178,8 @@
 
                 <div class="flex-grow flex flex-col justify-center">
                     <h3 class="text-xl font-semibold mb-4 text-center">Impact Breakdown</h3>
-                    <div class="w-full h-64 bg-indigo-600/70 rounded-lg p-4 flex items-end justify-around gap-2">
-                        <!-- Chart Bars -->
-                        <div class="flex flex-col items-center flex-1">
-                            <div id="salesImpactValue" class="text-xs font-bold mb-1">$0M</div>
-                            <div id="salesBar" class="w-full bg-cyan-400 rounded-t-md transition-all duration-500" style="height: 0%;"></div>
-                            <div class="text-center text-xs mt-2 text-indigo-200">Sales & Mkt</div>
-                        </div>
-                        <div class="flex flex-col items-center flex-1">
-                            <div id="churnImpactValue" class="text-xs font-bold mb-1">$0M</div>
-                            <div id="churnBar" class="w-full bg-teal-400 rounded-t-md transition-all duration-500" style="height: 0%;"></div>
-                            <div class="text-center text-xs mt-2 text-indigo-200">Churn Red.</div>
-                        </div>
-                        <div class="flex flex-col items-center flex-1">
-                             <div id="personalizationImpactValue" class="text-xs font-bold mb-1">$0M</div>
-                            <div id="personalizationBar" class="w-full bg-violet-400 rounded-t-md transition-all duration-500" style="height: 0%;"></div>
-                            <div class="text-center text-xs mt-2 text-indigo-200">Personalize</div>
-                        </div>
-                        <div class="flex flex-col items-center flex-1">
-                             <div id="costImpactValue" class="text-xs font-bold mb-1">$0M</div>
-                            <div id="costBar" class="w-full bg-amber-400 rounded-t-md transition-all duration-500" style="height: 0%;"></div>
-                            <div class="text-center text-xs mt-2 text-indigo-200">Cost Savings</div>
-                        </div>
+                    <div class="w-full h-64 bg-indigo-600/70 rounded-lg p-4">
+                        <canvas id="impactChart"></canvas>
                     </div>
                 </div>
                 
@@ -246,23 +227,11 @@
 
         // --- Output elements ---
         const totalImpactEl = document.getElementById('totalImpact');
-        const salesImpactValueEl = document.getElementById('salesImpactValue');
-        const churnImpactValueEl = document.getElementById('churnImpactValue');
-        const personalizationImpactValueEl = document.getElementById('personalizationImpactValue');
-        const costImpactValueEl = document.getElementById('costImpactValue');
+        const impactChartCanvas = document.getElementById('impactChart');
+        let impactChart;
         
-        const salesBarEl = document.getElementById('salesBar');
-        const churnBarEl = document.getElementById('churnBar');
-        const personalizationBarEl = document.getElementById('personalizationBar');
-        const costBarEl = document.getElementById('costBar');
-
         // --- Helper Functions ---
         const formatCurrency = (value) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        const formatCurrencyShort = (value) => {
-            if (value >= 1e6) return formatCurrency(value / 1e6) + 'M';
-            if (value >= 1e3) return formatCurrency(value / 1e3) + 'K';
-            return formatCurrency(value);
-        }
         const syncInputs = (slider, numberInput) => {
             slider.addEventListener('input', () => numberInput.value = slider.value);
             numberInput.addEventListener('input', () => {
@@ -274,12 +243,54 @@
             });
         };
 
+        // --- Chart Initialization ---
+        function initializeChart() {
+            if (!impactChartCanvas) return;
+            const ctx = impactChartCanvas.getContext('2d');
+            impactChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sales & Mkt', 'Churn Red.', 'Personalize', 'Cost Savings'],
+                    datasets: [{
+                        label: 'Annual Impact',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#22d3ee', '#2dd4bf', '#a78bfa', '#facc15'],
+                        borderColor: ['#22d3ee', '#2dd4bf', '#a78bfa', '#facc15'],
+                        borderWidth: 1,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y !== null ? formatCurrency(context.parsed.y) : '';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            display: false,
+                            grid: { display: false }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: 'rgba(255, 255, 255, 0.8)' }
+                        }
+                    }
+                }
+            });
+        }
+
         // --- Core Calculation Logic ---
         function calculateImpact() {
-            // --- Get values ---
             const experimentSuccessRate = 0.50;
-
-            // Revenue values
             const annualRevenue = parseFloat(annualRevenueEl.value) || 0;
             const effectivenessGain = parseFloat(effectivenessGainEl.value) / 100 || 0;
             const salesExperimentation = parseFloat(salesExperimentationEl.value) / 100 || 0;
@@ -290,31 +301,23 @@
             const segmentRevenue = parseFloat(segmentRevenueEl.value) || 0;
             const personalizationUplift = parseFloat(personalizationUpliftEl.value) / 100 || 0;
             const personalizationExperimentation = parseFloat(personalizationExperimentationEl.value) / 100 || 0;
-
-            // Cost values
             const numberOfEngineers = parseFloat(numberOfEngineersEl.value) || 0;
             const avgEngineerCost = parseFloat(avgEngineerCostEl.value) || 0;
             const engineeringEfficiencyGain = parseFloat(engineeringEfficiencyGainEl.value) / 100 || 0;
 
-            // --- Perform Calculations ---
-            // 1. Sales & Marketing Effectiveness
             const baseSalesImpact = annualRevenue * effectivenessGain;
             const salesImpact = baseSalesImpact * (1 + (salesExperimentation * experimentSuccessRate));
             
-            // 2. Churn Reduction
             const revenueLostToChurn = arr * churnRate;
             const baseChurnImpact = revenueLostToChurn * churnReduction;
             const churnImpact = baseChurnImpact * (1 + (churnExperimentation * experimentSuccessRate));
 
-            // 3. Personalization
             const basePersonalizationImpact = segmentRevenue * personalizationUplift;
             const personalizationImpact = basePersonalizationImpact * (1 + (personalizationExperimentation * experimentSuccessRate));
 
-            // 4. Cost Savings
             const totalEngineerCost = numberOfEngineers * avgEngineerCost;
             const costImpact = totalEngineerCost * engineeringEfficiencyGain;
             
-            // 5. Total Impact
             const totalImpact = salesImpact + churnImpact + personalizationImpact + costImpact;
 
             updateUI(salesImpact, churnImpact, personalizationImpact, costImpact, totalImpact);
@@ -323,45 +326,28 @@
         // --- UI Update Logic ---
         function updateUI(salesImpact, churnImpact, personalizationImpact, costImpact, totalImpact) {
             totalImpactEl.textContent = formatCurrency(totalImpact);
-
-            salesImpactValueEl.textContent = formatCurrencyShort(salesImpact);
-            churnImpactValueEl.textContent = formatCurrencyShort(churnImpact);
-            personalizationImpactValueEl.textContent = formatCurrencyShort(personalizationImpact);
-            costImpactValueEl.textContent = formatCurrencyShort(costImpact);
-            
-            if (totalImpact > 0) {
-                salesBarEl.style.height = `${Math.max(0, (salesImpact / totalImpact) * 100)}%`;
-                churnBarEl.style.height = `${Math.max(0, (churnImpact / totalImpact) * 100)}%`;
-                personalizationBarEl.style.height = `${Math.max(0, (personalizationImpact / totalImpact) * 100)}%`;
-                costBarEl.style.height = `${Math.max(0, (costImpact / totalImpact) * 100)}%`;
-            } else {
-                [salesBarEl, churnBarEl, personalizationBarEl, costBarEl].forEach(bar => bar.style.height = '0%');
+            if (impactChart) {
+                impactChart.data.datasets[0].data = [salesImpact, churnImpact, personalizationImpact, costImpact];
+                impactChart.update();
             }
         }
 
         // --- Event Listeners ---
         inputs.forEach(input => input.addEventListener('input', calculateImpact));
         
-        // Tab switching
         revenueTab.addEventListener('click', () => {
-            // Style Revenue Tab as active
             revenueTab.classList.add('tab-active');
             revenueTab.classList.remove('text-slate-600');
-            // Style Cost Tab as inactive
             costTab.classList.remove('tab-active');
             costTab.classList.add('text-slate-600');
-            // Show revenue content
             revenueContent.classList.remove('hidden');
             costContent.classList.add('hidden');
         });
         costTab.addEventListener('click', () => {
-            // Style Cost Tab as active
             costTab.classList.add('tab-active');
             costTab.classList.remove('text-slate-600');
-            // Style Revenue Tab as inactive
             revenueTab.classList.remove('tab-active');
             revenueTab.classList.add('text-slate-600');
-            // Show cost content
             costContent.classList.remove('hidden');
             revenueContent.classList.add('hidden');
         });
@@ -376,10 +362,12 @@
         syncInputs(engineeringEfficiencyGainSliderEl, engineeringEfficiencyGainEl);
 
         // --- Initial Calculation ---
-        document.addEventListener('DOMContentLoaded', calculateImpact);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeChart();
+            calculateImpact();
+        });
     </script>
 
 </body>
 </html>
-
 
