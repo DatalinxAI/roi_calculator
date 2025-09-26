@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Datalinx AI | Revenue Impact Calculator</title>
+    <title>Datalinx AI | Revenue & Cost Impact Calculator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -26,6 +26,10 @@
             cursor: pointer;
             border-radius: 50%;
         }
+        .tab-active {
+            background-color: #4f46e5;
+            color: white;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800">
@@ -33,100 +37,133 @@
     <div class="container mx-auto p-4 md:p-8">
         <!-- Header -->
         <header class="text-center mb-10">
-            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Datalinx AI Revenue Impact Calculator</h1>
-            <p class="mt-2 text-lg text-slate-600">Quantify the potential ROI of implementing our AI solutions.</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Datalinx AI Impact Calculator</h1>
+            <p class="mt-2 text-lg text-slate-600">Quantify the total ROI from revenue gains and cost savings.</p>
         </header>
 
         <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8">
             
             <!-- Left Side: Inputs -->
             <div class="lg:col-span-3 bg-white p-6 md:p-8 rounded-2xl shadow-lg">
-                <h2 class="text-2xl font-bold mb-6 text-slate-900">Enter Your Business Metrics</h2>
-
-                <!-- Section 1: Sales & Marketing Effectiveness -->
-                <div class="mb-8 p-6 border border-slate-200 rounded-xl">
-                    <h3 class="text-xl font-semibold text-indigo-700 mb-4">1. Sales & Marketing Effectiveness</h3>
-                    <div class="mb-6">
-                        <div>
-                            <label for="annualRevenue" class="block text-sm font-medium text-slate-600 mb-1">Your Average Annual Revenue ($)</label>
-                            <input type="number" id="annualRevenue" value="50000000" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="effectivenessGain" class="block text-sm font-medium text-slate-600 mb-2">Potential Effectiveness Gain (%)</label>
-                            <div class="flex items-center gap-4">
-                                <input type="range" id="effectivenessGainSlider" min="1" max="25" value="8" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
-                                <input type="number" id="effectivenessGain" min="1" max="25" value="8" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="salesExperimentation" class="block text-sm font-medium text-slate-600 mb-2">Increase in Experimentation (%)</label>
-                            <div class="flex items-center gap-4">
-                                <input type="range" id="salesExperimentationSlider" min="10" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
-                                <input type="number" id="salesExperimentation" min="10" max="100" value="50" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-500 mt-4 text-center md:text-right">Assumption: 50% of experiments are successful in generating lift.</p>
+                <!-- Tab Navigation -->
+                <div class="mb-6 flex border-b border-slate-200">
+                    <button id="revenueTab" class="py-2 px-4 font-semibold rounded-t-lg tab-active">Revenue Impact</button>
+                    <button id="costTab" class="py-2 px-4 font-semibold text-slate-600 rounded-t-lg">Cost Savings</button>
                 </div>
 
-                <!-- Section 2: Churn Reduction -->
-                <div class="mb-8 p-6 border border-slate-200 rounded-xl">
-                    <h3 class="text-xl font-semibold text-indigo-700 mb-4">2. Churn Reduction</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="arr" class="block text-sm font-medium text-slate-600 mb-1">Annual Recurring Revenue (ARR) ($)</label>
-                            <input type="number" id="arr" value="40000000" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                        <div>
-                            <label for="churnRate" class="block text-sm font-medium text-slate-600 mb-1">Current Annual Churn Rate (%)</label>
-                            <input type="number" id="churnRate" value="12" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                        </div>
-                    </div>
-                     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="churnReduction" class="block text-sm font-medium text-slate-600 mb-2">Potential Churn Reduction (%)</label>
-                            <div class="flex items-center gap-4">
-                                <input type="range" id="churnReductionSlider" min="5" max="40" value="20" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
-                                <input type="number" id="churnReduction" min="5" max="40" value="20" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                <!-- Revenue Impact Content -->
+                <div id="revenueContent">
+                    <h2 class="text-2xl font-bold mb-6 text-slate-900">Enter Your Business Metrics</h2>
+                    <!-- Section 1: Sales & Marketing Effectiveness -->
+                    <div class="mb-8 p-6 border border-slate-200 rounded-xl">
+                        <h3 class="text-xl font-semibold text-indigo-700 mb-4">1. Sales & Marketing Effectiveness</h3>
+                        <div class="mb-6">
+                            <div>
+                                <label for="annualRevenue" class="block text-sm font-medium text-slate-600 mb-1">Your Average Annual Revenue ($)</label>
+                                <input type="number" id="annualRevenue" value="50000000" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
-                        <div>
-                            <label for="churnExperimentation" class="block text-sm font-medium text-slate-600 mb-2">Increase in Experimentation (%)</label>
-                            <div class="flex items-center gap-4">
-                                <input type="range" id="churnExperimentationSlider" min="10" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
-                                <input type="number" id="churnExperimentation" min="10" max="100" value="50" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="effectivenessGain" class="block text-sm font-medium text-slate-600 mb-2">Potential Effectiveness Gain (%)</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="range" id="effectivenessGainSlider" min="1" max="25" value="8" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                    <input type="number" id="effectivenessGain" min="1" max="25" value="8" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="salesExperimentation" class="block text-sm font-medium text-slate-600 mb-2">Increase in Experimentation (%)</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="range" id="salesExperimentationSlider" min="10" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                    <input type="number" id="salesExperimentation" min="10" max="100" value="50" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                                </div>
                             </div>
                         </div>
+                        <p class="text-xs text-slate-500 mt-4 text-center md:text-right">Assumption: 50% of experiments are successful in generating lift.</p>
                     </div>
-                    <p class="text-xs text-slate-500 mt-4 text-center md:text-right">Assumption: 50% of experiments are successful in generating lift.</p>
+
+                    <!-- Section 2: Churn Reduction -->
+                    <div class="mb-8 p-6 border border-slate-200 rounded-xl">
+                        <h3 class="text-xl font-semibold text-indigo-700 mb-4">2. Churn Reduction</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="arr" class="block text-sm font-medium text-slate-600 mb-1">Annual Recurring Revenue (ARR) ($)</label>
+                                <input type="number" id="arr" value="40000000" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="churnRate" class="block text-sm font-medium text-slate-600 mb-1">Current Annual Churn Rate (%)</label>
+                                <input type="number" id="churnRate" value="12" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                        </div>
+                         <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="churnReduction" class="block text-sm font-medium text-slate-600 mb-2">Potential Churn Reduction (%)</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="range" id="churnReductionSlider" min="5" max="40" value="20" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                    <input type="number" id="churnReduction" min="5" max="40" value="20" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="churnExperimentation" class="block text-sm font-medium text-slate-600 mb-2">Increase in Experimentation (%)</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="range" id="churnExperimentationSlider" min="10" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                    <input type="number" id="churnExperimentation" min="10" max="100" value="50" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-4 text-center md:text-right">Assumption: 50% of experiments are successful in generating lift.</p>
+                    </div>
+
+                    <!-- Section 3: Personalization at Scale -->
+                    <div class="p-6 border border-slate-200 rounded-xl">
+                        <h3 class="text-xl font-semibold text-indigo-700 mb-4">3. Personalization at Scale</h3>
+                        <div>
+                            <label for="segmentRevenue" class="block text-sm font-medium text-slate-600 mb-1">Annual Revenue from Target Segment ($)</label>
+                            <input type="number" id="segmentRevenue" value="15000000" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                         <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="personalizationUplift" class="block text-sm font-medium text-slate-600 mb-2">Potential Personalization Uplift (%)</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="range" id="personalizationUpliftSlider" min="1" max="20" value="10" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                    <input type="number" id="personalizationUplift" min="1" max="20" value="10" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="personalizationExperimentation" class="block text-sm font-medium text-slate-600 mb-2">Increase in Experimentation (%)</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="range" id="personalizationExperimentationSlider" min="10" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                    <input type="number" id="personalizationExperimentation" min="10" max="100" value="50" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-4 text-center md:text-right">Assumption: 50% of experiments are successful in generating lift.</p>
+                    </div>
                 </div>
 
-                <!-- Section 3: Personalization at Scale -->
-                <div class="p-6 border border-slate-200 rounded-xl">
-                    <h3 class="text-xl font-semibold text-indigo-700 mb-4">3. Personalization at Scale</h3>
-                    <div>
-                        <label for="segmentRevenue" class="block text-sm font-medium text-slate-600 mb-1">Annual Revenue from Target Segment ($)</label>
-                        <input type="number" id="segmentRevenue" value="15000000" class="w-full md:w-1/2 p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                     <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="personalizationUplift" class="block text-sm font-medium text-slate-600 mb-2">Potential Personalization Uplift (%)</label>
-                            <div class="flex items-center gap-4">
-                                <input type="range" id="personalizationUpliftSlider" min="1" max="20" value="10" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
-                                <input type="number" id="personalizationUplift" min="1" max="20" value="10" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                <!-- Cost Savings Content (hidden by default) -->
+                <div id="costContent" class="hidden">
+                    <h2 class="text-2xl font-bold mb-6 text-slate-900">Enter Your Cost & Team Metrics</h2>
+                    <div class="p-6 border border-slate-200 rounded-xl">
+                        <h3 class="text-xl font-semibold text-indigo-700 mb-4">Engineering Efficiency Gains</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="numberOfEngineers" class="block text-sm font-medium text-slate-600 mb-1">Number of Current Engineers</label>
+                                <input type="number" id="numberOfEngineers" value="40" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            </div>
+                            <div>
+                                <label for="avgEngineerCost" class="block text-sm font-medium text-slate-600 mb-1">Average Loaded Cost per Engineer ($)</label>
+                                <input type="number" id="avgEngineerCost" value="180000" class="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                             </div>
                         </div>
                         <div>
-                            <label for="personalizationExperimentation" class="block text-sm font-medium text-slate-600 mb-2">Increase in Experimentation (%)</label>
+                            <label for="engineeringEfficiencyGain" class="block text-sm font-medium text-slate-600 mb-2">Potential Engineering Efficiency Gain (%)</label>
                             <div class="flex items-center gap-4">
-                                <input type="range" id="personalizationExperimentationSlider" min="10" max="100" value="50" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
-                                <input type="number" id="personalizationExperimentation" min="10" max="100" value="50" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
+                                <input type="range" id="engineeringEfficiencyGainSlider" min="5" max="50" value="15" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer slider-thumb">
+                                <input type="number" id="engineeringEfficiencyGain" min="5" max="50" value="15" class="w-24 p-2 border border-slate-300 rounded-md shadow-sm text-center">
                             </div>
                         </div>
                     </div>
-                    <p class="text-xs text-slate-500 mt-4 text-center md:text-right">Assumption: 50% of experiments are successful in generating lift.</p>
                 </div>
             </div>
 
@@ -140,22 +177,27 @@
 
                 <div class="flex-grow flex flex-col justify-center">
                     <h3 class="text-xl font-semibold mb-4 text-center">Impact Breakdown</h3>
-                    <div class="w-full h-64 bg-indigo-600/70 rounded-lg p-4 flex items-end justify-around gap-4">
+                    <div class="w-full h-64 bg-indigo-600/70 rounded-lg p-4 flex items-end justify-around gap-2">
                         <!-- Chart Bars -->
-                        <div class="flex flex-col items-center w-1/3">
-                            <div id="salesImpactValue" class="text-sm font-bold mb-1">$0M</div>
+                        <div class="flex flex-col items-center flex-1">
+                            <div id="salesImpactValue" class="text-xs font-bold mb-1">$0M</div>
                             <div id="salesBar" class="w-full bg-cyan-400 rounded-t-md transition-all duration-500" style="height: 0%;"></div>
-                            <div class="text-center text-xs mt-2 text-indigo-200">Sales & Marketing</div>
+                            <div class="text-center text-xs mt-2 text-indigo-200">Sales & Mkt</div>
                         </div>
-                        <div class="flex flex-col items-center w-1/3">
-                            <div id="churnImpactValue" class="text-sm font-bold mb-1">$0M</div>
+                        <div class="flex flex-col items-center flex-1">
+                            <div id="churnImpactValue" class="text-xs font-bold mb-1">$0M</div>
                             <div id="churnBar" class="w-full bg-teal-400 rounded-t-md transition-all duration-500" style="height: 0%;"></div>
-                            <div class="text-center text-xs mt-2 text-indigo-200">Churn Reduction</div>
+                            <div class="text-center text-xs mt-2 text-indigo-200">Churn Red.</div>
                         </div>
-                        <div class="flex flex-col items-center w-1/3">
-                             <div id="personalizationImpactValue" class="text-sm font-bold mb-1">$0M</div>
+                        <div class="flex flex-col items-center flex-1">
+                             <div id="personalizationImpactValue" class="text-xs font-bold mb-1">$0M</div>
                             <div id="personalizationBar" class="w-full bg-violet-400 rounded-t-md transition-all duration-500" style="height: 0%;"></div>
-                            <div class="text-center text-xs mt-2 text-indigo-200">Personalization</div>
+                            <div class="text-center text-xs mt-2 text-indigo-200">Personalize</div>
+                        </div>
+                        <div class="flex flex-col items-center flex-1">
+                             <div id="costImpactValue" class="text-xs font-bold mb-1">$0M</div>
+                            <div id="costBar" class="w-full bg-amber-400 rounded-t-md transition-all duration-500" style="height: 0%;"></div>
+                            <div class="text-center text-xs mt-2 text-indigo-200">Cost Savings</div>
                         </div>
                     </div>
                 </div>
@@ -172,57 +214,58 @@
         // --- DOM Element Selection ---
         const inputs = document.querySelectorAll('input[type="number"], input[type="range"]');
         
-        // Input values - Sales & Marketing
+        // --- Tabs ---
+        const revenueTab = document.getElementById('revenueTab');
+        const costTab = document.getElementById('costTab');
+        const revenueContent = document.getElementById('revenueContent');
+        const costContent = document.getElementById('costContent');
+
+        // --- Revenue Inputs ---
         const annualRevenueEl = document.getElementById('annualRevenue');
         const effectivenessGainEl = document.getElementById('effectivenessGain');
         const effectivenessGainSliderEl = document.getElementById('effectivenessGainSlider');
         const salesExperimentationEl = document.getElementById('salesExperimentation');
         const salesExperimentationSliderEl = document.getElementById('salesExperimentationSlider');
-        
-        // Input values - Churn
         const arrEl = document.getElementById('arr');
         const churnRateEl = document.getElementById('churnRate');
         const churnReductionEl = document.getElementById('churnReduction');
         const churnReductionSliderEl = document.getElementById('churnReductionSlider');
         const churnExperimentationEl = document.getElementById('churnExperimentation');
         const churnExperimentationSliderEl = document.getElementById('churnExperimentationSlider');
-
-        // Input values - Personalization
         const segmentRevenueEl = document.getElementById('segmentRevenue');
         const personalizationUpliftEl = document.getElementById('personalizationUplift');
         const personalizationUpliftSliderEl = document.getElementById('personalizationUpliftSlider');
         const personalizationExperimentationEl = document.getElementById('personalizationExperimentation');
         const personalizationExperimentationSliderEl = document.getElementById('personalizationExperimentationSlider');
 
-        // Output elements
+        // --- Cost Inputs ---
+        const numberOfEngineersEl = document.getElementById('numberOfEngineers');
+        const avgEngineerCostEl = document.getElementById('avgEngineerCost');
+        const engineeringEfficiencyGainEl = document.getElementById('engineeringEfficiencyGain');
+        const engineeringEfficiencyGainSliderEl = document.getElementById('engineeringEfficiencyGainSlider');
+
+        // --- Output elements ---
         const totalImpactEl = document.getElementById('totalImpact');
         const salesImpactValueEl = document.getElementById('salesImpactValue');
         const churnImpactValueEl = document.getElementById('churnImpactValue');
         const personalizationImpactValueEl = document.getElementById('personalizationImpactValue');
+        const costImpactValueEl = document.getElementById('costImpactValue');
         
         const salesBarEl = document.getElementById('salesBar');
         const churnBarEl = document.getElementById('churnBar');
         const personalizationBarEl = document.getElementById('personalizationBar');
+        const costBarEl = document.getElementById('costBar');
 
         // --- Helper Functions ---
-        const formatCurrency = (value) => {
-            return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        };
-        
+        const formatCurrency = (value) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 });
         const formatCurrencyShort = (value) => {
-            if (value >= 1e6) {
-                return formatCurrency(value / 1e6) + 'M';
-            }
-            if (value >= 1e3) {
-                 return formatCurrency(value / 1e3) + 'K';
-            }
+            if (value >= 1e6) return formatCurrency(value / 1e6) + 'M';
+            if (value >= 1e3) return formatCurrency(value / 1e3) + 'K';
             return formatCurrency(value);
         }
-
         const syncInputs = (slider, numberInput) => {
             slider.addEventListener('input', () => numberInput.value = slider.value);
             numberInput.addEventListener('input', () => {
-                // Basic validation to keep number in slider range
                 const min = parseFloat(slider.min);
                 const max = parseFloat(slider.max);
                 if (numberInput.value > max) numberInput.value = max;
@@ -233,24 +276,25 @@
 
         // --- Core Calculation Logic ---
         function calculateImpact() {
-            // --- Get values and convert to numbers/percentages ---
-            const experimentSuccessRate = 0.50; // Fixed 50% success rate
+            // --- Get values ---
+            const experimentSuccessRate = 0.50;
 
-            // Sales & Marketing values
+            // Revenue values
             const annualRevenue = parseFloat(annualRevenueEl.value) || 0;
             const effectivenessGain = parseFloat(effectivenessGainEl.value) / 100 || 0;
             const salesExperimentation = parseFloat(salesExperimentationEl.value) / 100 || 0;
-
-            // Churn values
             const arr = parseFloat(arrEl.value) || 0;
             const churnRate = parseFloat(churnRateEl.value) / 100 || 0;
             const churnReduction = parseFloat(churnReductionEl.value) / 100 || 0;
             const churnExperimentation = parseFloat(churnExperimentationEl.value) / 100 || 0;
-
-            // Personalization values
             const segmentRevenue = parseFloat(segmentRevenueEl.value) || 0;
             const personalizationUplift = parseFloat(personalizationUpliftEl.value) / 100 || 0;
             const personalizationExperimentation = parseFloat(personalizationExperimentationEl.value) / 100 || 0;
+
+            // Cost values
+            const numberOfEngineers = parseFloat(numberOfEngineersEl.value) || 0;
+            const avgEngineerCost = parseFloat(avgEngineerCostEl.value) || 0;
+            const engineeringEfficiencyGain = parseFloat(engineeringEfficiencyGainEl.value) / 100 || 0;
 
             // --- Perform Calculations ---
             // 1. Sales & Marketing Effectiveness
@@ -266,41 +310,62 @@
             const basePersonalizationImpact = segmentRevenue * personalizationUplift;
             const personalizationImpact = basePersonalizationImpact * (1 + (personalizationExperimentation * experimentSuccessRate));
 
-            // 4. Total Impact
-            const totalImpact = salesImpact + churnImpact + personalizationImpact;
+            // 4. Cost Savings
+            const totalEngineerCost = numberOfEngineers * avgEngineerCost;
+            const costImpact = totalEngineerCost * engineeringEfficiencyGain;
+            
+            // 5. Total Impact
+            const totalImpact = salesImpact + churnImpact + personalizationImpact + costImpact;
 
-            updateUI(salesImpact, churnImpact, personalizationImpact, totalImpact);
+            updateUI(salesImpact, churnImpact, personalizationImpact, costImpact, totalImpact);
         }
         
         // --- UI Update Logic ---
-        function updateUI(salesImpact, churnImpact, personalizationImpact, totalImpact) {
-            // Update total value
+        function updateUI(salesImpact, churnImpact, personalizationImpact, costImpact, totalImpact) {
             totalImpactEl.textContent = formatCurrency(totalImpact);
 
-            // Update bar chart labels
             salesImpactValueEl.textContent = formatCurrencyShort(salesImpact);
             churnImpactValueEl.textContent = formatCurrencyShort(churnImpact);
             personalizationImpactValueEl.textContent = formatCurrencyShort(personalizationImpact);
+            costImpactValueEl.textContent = formatCurrencyShort(costImpact);
             
-            // Update bar chart heights
             if (totalImpact > 0) {
-                const salesPercent = Math.max(0, (salesImpact / totalImpact) * 100);
-                const churnPercent = Math.max(0, (churnImpact / totalImpact) * 100);
-                const personalizationPercent = Math.max(0, (personalizationImpact / totalImpact) * 100);
-
-                salesBarEl.style.height = `${salesPercent}%`;
-                churnBarEl.style.height = `${churnPercent}%`;
-                personalizationBarEl.style.height = `${personalizationPercent}%`;
+                salesBarEl.style.height = `${Math.max(0, (salesImpact / totalImpact) * 100)}%`;
+                churnBarEl.style.height = `${Math.max(0, (churnImpact / totalImpact) * 100)}%`;
+                personalizationBarEl.style.height = `${Math.max(0, (personalizationImpact / totalImpact) * 100)}%`;
+                costBarEl.style.height = `${Math.max(0, (costImpact / totalImpact) * 100)}%`;
             } else {
-                salesBarEl.style.height = '0%';
-                churnBarEl.style.height = '0%';
-                personalizationBarEl.style.height = '0%';
+                [salesBarEl, churnBarEl, personalizationBarEl, costBarEl].forEach(bar => bar.style.height = '0%');
             }
         }
 
         // --- Event Listeners ---
         inputs.forEach(input => input.addEventListener('input', calculateImpact));
         
+        // Tab switching
+        revenueTab.addEventListener('click', () => {
+            // Style Revenue Tab as active
+            revenueTab.classList.add('tab-active');
+            revenueTab.classList.remove('text-slate-600');
+            // Style Cost Tab as inactive
+            costTab.classList.remove('tab-active');
+            costTab.classList.add('text-slate-600');
+            // Show revenue content
+            revenueContent.classList.remove('hidden');
+            costContent.classList.add('hidden');
+        });
+        costTab.addEventListener('click', () => {
+            // Style Cost Tab as active
+            costTab.classList.add('tab-active');
+            costTab.classList.remove('text-slate-600');
+            // Style Revenue Tab as inactive
+            revenueTab.classList.remove('tab-active');
+            revenueTab.classList.add('text-slate-600');
+            // Show cost content
+            costContent.classList.remove('hidden');
+            revenueContent.classList.add('hidden');
+        });
+
         // Sync sliders with number inputs
         syncInputs(effectivenessGainSliderEl, effectivenessGainEl);
         syncInputs(salesExperimentationSliderEl, salesExperimentationEl);
@@ -308,7 +373,7 @@
         syncInputs(churnExperimentationSliderEl, churnExperimentationEl);
         syncInputs(personalizationUpliftSliderEl, personalizationUpliftEl);
         syncInputs(personalizationExperimentationSliderEl, personalizationExperimentationEl);
-
+        syncInputs(engineeringEfficiencyGainSliderEl, engineeringEfficiencyGainEl);
 
         // --- Initial Calculation ---
         document.addEventListener('DOMContentLoaded', calculateImpact);
